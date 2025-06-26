@@ -99,8 +99,6 @@ Visit [http://localhost:3000](http://localhost:3000)
 - Responsive, modern UI using Tailwind CSS
 - Add, edit, delete, and toggle complete/incomplete for tasks
 - All task operations use the provided `/api/todos/route.ts` API endpoints
-- Mobile-friendly navigation with a hamburger menu and overlay
-- Clean, accessible, and consistent design for both light and dark modes
 - Task IDs are now displayed in a consistent, user-friendly format
 - Error handling and loading states for all async operations
 - No unnecessary API wrapper files; all API calls use the provided Next.js API route
@@ -112,7 +110,6 @@ Visit [http://localhost:3000](http://localhost:3000)
 - Add due dates, priorities, or categories for tasks
 - Add animations for task actions (add, edit, delete)
 - Add tests (unit/integration) for components and API
-- Improve accessibility (a11y) and keyboard navigation
 - Add pagination or search for large task lists
 - Add notifications or toasts for actions
 
