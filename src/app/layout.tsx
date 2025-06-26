@@ -1,23 +1,16 @@
 import type { Metadata } from "next";
-import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
-
-const geistSans = Geist({
-  variable: "--font-geist-sans",
-  subsets: ["latin"],
-});
-
-const geistMono = Geist_Mono({
-  variable: "--font-geist-mono",
-  subsets: ["latin"],
-});
 
 export const metadata: Metadata = {
   title: "TopSchool AI - Task Management",
   description: "Stay organized and boost your productivity with our powerful task management system",
   keywords: ["task management", "productivity", "todo", "organization", "TopSchool AI"],
   authors: [{ name: "TopSchool AI" }],
-  viewport: "width=device-width, initial-scale=1",
+};
+
+export const viewport = {
+  width: "device-width",
+  initialScale: 1,
 };
 
 export default function RootLayout({
@@ -28,7 +21,8 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body
-        className={`${geistSans.variable} ${geistMono.variable} antialiased`}
+        className="antialiased"
+        style={{ fontFamily: 'Segoe UI, Roboto, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace, system-ui, sans-serif' }}
       >
         {children}
       </body>

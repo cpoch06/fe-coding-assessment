@@ -10,6 +10,7 @@ export const useTasks = () => {
   const [isListOpen, setIsListOpen] = useState(true);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [isInitialLoad, setIsInitialLoad] = useState(true);
 
   // Load tasks from API on mount
   useEffect(() => {
@@ -29,6 +30,7 @@ export const useTasks = () => {
       console.error('Error fetching tasks:', err);
     } finally {
       setLoading(false);
+      setIsInitialLoad(false);
     }
   };
 
@@ -133,5 +135,6 @@ export const useTasks = () => {
     toggleList,
     clearError,
     refetch: fetchTasks,
+    isInitialLoad,
   };
 }; 

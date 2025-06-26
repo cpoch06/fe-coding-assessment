@@ -8,7 +8,7 @@ import { useTasks } from './useTasks';
 import { Task, TaskFormData } from '../../../../lib/types';
 
 export const TaskManager = () => {
-  const { tasks, isListOpen, loading, error, addTask, updateTask, toggleTask, deleteTask, toggleList, clearError } = useTasks();
+  const { tasks, isListOpen, loading, error, addTask, updateTask, toggleTask, deleteTask, toggleList, clearError, isInitialLoad } = useTasks();
   const [editingTask, setEditingTask] = useState<Task | null>(null);
   const [isEditing, setIsEditing] = useState(false);
   const [deleteModalTask, setDeleteModalTask] = useState<Task | null>(null);
@@ -92,6 +92,7 @@ export const TaskManager = () => {
         onEditTask={handleEditTask}
         onDeleteTask={handleDeleteClick}
         loading={loading}
+        isInitialLoad={isInitialLoad}
       />
 
       {/* Delete Modal */}

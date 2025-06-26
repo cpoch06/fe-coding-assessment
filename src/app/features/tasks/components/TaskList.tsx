@@ -1,5 +1,6 @@
 "use client";
 
+import { useEffect, useRef, useState } from 'react';
 import { Task } from '../../../../lib/types';
 
 interface TaskListProps {
@@ -10,6 +11,7 @@ interface TaskListProps {
   onEditTask: (task: Task) => void;
   onDeleteTask: (task: Task) => void;
   loading?: boolean;
+  isInitialLoad?: boolean;
 }
 
 export const TaskList = ({
@@ -20,9 +22,52 @@ export const TaskList = ({
   onEditTask,
   onDeleteTask,
   loading = false,
+  isInitialLoad = false,
 }: TaskListProps) => {
   const completedTasks = tasks.filter(task => task.completed);
   const incompleteTasks = tasks.filter(task => !task.completed);
+
+  // Animation state
+  const [animatingIds, setAnimatingIds] = useState<{ [id: number]: 'add' | 'edit' | 'delete' | null }>({});
+  const prevTasksRef = useRef<Task[]>(tasks);
+  const isFirstRender = useRef(true);
+
+  // Detect add/delete/edit
+  useEffect(() => {
+    if (isFirstRender.current || isInitialLoad) {
+      isFirstRender.current = false;
+      prevTasksRef.current = tasks;
+      return;
+    }
+    const prevTasks = prevTasksRef.current;
+    // Added
+    tasks.forEach(task => {
+      if (!prevTasks.find(t => t.id === task.id)) {
+        setAnimatingIds(ids => ({ ...ids, [task.id]: 'add' }));
+        setTimeout(() => setAnimatingIds(ids => ({ ...ids, [task.id]: null })), 500);
+      }
+    });
+    // Deleted
+    prevTasks.forEach(task => {
+      if (!tasks.find(t => t.id === task.id)) {
+        setAnimatingIds(ids => ({ ...ids, [task.id]: 'delete' }));
+        setTimeout(() => setAnimatingIds(ids => {
+          const rest = { ...ids };
+          delete rest[task.id];
+          return rest;
+        }), 500);
+      }
+    });
+    // Edited (title changed)
+    tasks.forEach(task => {
+      const prev = prevTasks.find(t => t.id === task.id);
+      if (prev && prev.title !== task.title) {
+        setAnimatingIds(ids => ({ ...ids, [task.id]: 'edit' }));
+        setTimeout(() => setAnimatingIds(ids => ({ ...ids, [task.id]: null })), 500);
+      }
+    });
+    prevTasksRef.current = tasks;
+  }, [tasks, isInitialLoad]);
 
   if (tasks.length === 0) {
     return (
@@ -50,6 +95,15 @@ export const TaskList = ({
       </div>
     );
   }
+
+  // Animation classes
+  const getRowClass = (id: number) => {
+    const state = animatingIds[id];
+    if (state === 'add') return 'animate-fade-in-slide-up';
+    if (state === 'delete') return 'animate-fade-out-slide-down';
+    if (state === 'edit') return 'animate-edit-highlight';
+    return '';
+  };
 
   return (
     <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-lg overflow-hidden">
@@ -100,7 +154,7 @@ export const TaskList = ({
             <tbody className="bg-white dark:bg-gray-800 divide-y divide-gray-200 dark:divide-gray-700">
               {/* Incomplete Tasks */}
               {incompleteTasks.map((task) => (
-                <tr key={task.id} className="hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors">
+                <tr key={task.id} className={`hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors ${getRowClass(task.id)}`}>
                   <td className="px-3 sm:px-6 py-3 sm:py-4 whitespace-nowrap">
                     <button
                       onClick={() => onToggleTask(task.id)}
@@ -151,7 +205,7 @@ export const TaskList = ({
               
               {/* Completed Tasks */}
               {completedTasks.map((task) => (
-                <tr key={task.id} className="hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors">
+                <tr key={task.id} className={`hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors ${getRowClass(task.id)}`}>
                   <td className="px-3 sm:px-6 py-3 sm:py-4 whitespace-nowrap">
                     <button
                       onClick={() => onToggleTask(task.id)}

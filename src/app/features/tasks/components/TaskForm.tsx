@@ -16,6 +16,7 @@ export const TaskForm = ({ onSubmit, initialData, isEditing = false, onCancel, l
     title: initialData?.title || '',
   });
   const [error, setError] = useState('');
+  const [isAdding, setIsAdding] = useState(false);
 
   useEffect(() => {
     if (initialData) {
@@ -23,7 +24,7 @@ export const TaskForm = ({ onSubmit, initialData, isEditing = false, onCancel, l
     }
   }, [initialData]);
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError('');
 
@@ -32,9 +33,11 @@ export const TaskForm = ({ onSubmit, initialData, isEditing = false, onCancel, l
       return;
     }
 
-    onSubmit(formData);
+    if (!isEditing) setIsAdding(true);
+    await onSubmit(formData);
     if (!isEditing) {
       setFormData({ title: '' });
+      setIsAdding(false);
     }
   };
 
@@ -75,16 +78,16 @@ export const TaskForm = ({ onSubmit, initialData, isEditing = false, onCancel, l
         <div className="flex flex-col sm:flex-row gap-3">
           <button
             type="submit"
-            disabled={loading}
-            className="flex-1 bg-gradient-to-r from-blue-600 to-purple-600 text-white px-4 sm:px-6 py-2 sm:py-3 rounded-lg font-semibold hover:from-blue-700 hover:to-purple-700 transition-all duration-300 transform hover:scale-105 shadow-lg disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none text-sm sm:text-base"
+            disabled={loading || isAdding}
+            className={`flex-1 bg-gradient-to-r from-blue-600 to-purple-600 text-white px-4 sm:px-6 py-2 sm:py-3 rounded-lg font-semibold hover:from-blue-700 hover:to-purple-700 transition-all duration-300 transform shadow-lg disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none text-sm sm:text-base ${isAdding ? 'animate-add-btn' : ''}`}
           >
-            {loading ? (
+            {isAdding ? (
               <span className="flex items-center justify-center">
                 <svg className="animate-spin -ml-1 mr-2 h-4 w-4 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
                   <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
                   <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
                 </svg>
-                {isEditing ? 'Updating...' : 'Adding...'}
+                Adding...
               </span>
             ) : (
               isEditing ? 'Update Task' : 'Add Task'
